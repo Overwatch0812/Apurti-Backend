@@ -30,12 +30,47 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 OPEN_AI_KEY=env("OPEN_AI_KEY")
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
 
 # Application definition
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://apurti-an-intelligence-warehouse-management-system.vercel.app"
 ]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': env('client_id'),
+            'secret': env('secret'),
+            'key': ''
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+LOGIN_REDIRECT_URL = 'http://localhost:5173/forecast'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http'
+SOCIALACCOUNT_LOGIN_ON_GET = True 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
 
 CORS_ALLOW_ALL_ORIGINS: True
 INSTALLED_APPS = [
@@ -45,12 +80,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    "rest_framework.authtoken",
     "corsheaders",
     'rest_framework'
 ]
 
 MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
